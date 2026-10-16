@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"net/http"
 	"os/signal"
 	"syscall"
+	"time"
 	"url-shortener/internal/handler/create"
 	"url-shortener/internal/handler/get"
 	"url-shortener/internal/repository/memstorage"
@@ -28,6 +29,23 @@ func main() {
 	rtr.Post("/", create.New(ctx, repo))
 	rtr.Get("/{id}", get.New(ctx, repo))
 
-	fmt.Println("server listening on :8080")
-	http.ListenAndServe(":8080", rtr)
+	server := http.Server{Addr: ":8080", Handler: rtr}
+
+	go func() {
+		log.Println("server listening on :8080")
+
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("listen: %s\n", err)
+		}
+	}()
+
+	<-ctx.Done()
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
+	defer cancel()
+
+	if err := server.Shutdown(shutdownCtx); err != nil {
+		log.Printf("shutdown: %v", err)
+	}
+	log.Println("server stopped")
 }
