@@ -48,8 +48,8 @@ func New(ctx context.Context, creator shortURLCreator) http.HandlerFunc {
 
 		fmt.Println("r,uri", r.URL.RequestURI())
 
-		w.Write([]byte("http://localhost:8080/" + newCode))
 		w.WriteHeader(http.StatusCreated)
+		w.Write([]byte("http://localhost:8080/" + newCode))
 	}
 }
 
