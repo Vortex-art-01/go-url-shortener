@@ -13,7 +13,7 @@ type Repository struct {
 	conn *pgx.Conn
 }
 
-func (r *Repository) CreateShortUrl(ctx context.Context, url, shortURL string) error {
+func (r *Repository) CreateShortURL(ctx context.Context, url, shortURL string) error {
 	var exists bool
 	err := r.conn.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM url WHERE full_url = $1)", url).Scan(&exists)
 	if err != nil {
@@ -30,7 +30,7 @@ func (r *Repository) CreateShortUrl(ctx context.Context, url, shortURL string) e
 
 	return nil
 }
-func (r Repository) GetUrl(ctx context.Context, shortURL string) (string, error) {
+func (r Repository) GetURL(ctx context.Context, shortURL string) (string, error) {
 	row := r.conn.QueryRow(ctx, "SELECT full_url FROM url WHERE short_url = $1", shortURL)
 	var fullURL string
 	err := row.Scan(&fullURL)

@@ -10,8 +10,8 @@ import (
 )
 
 type shortURLCreator interface {
-	CreateShortUrl(url, shortURL string) error
-	GetShortUrl(url string) (string, error)
+	CreateShortURL(url, shortURL string) error
+	GetShortURL(url string) (string, error)
 }
 
 func New(ctx context.Context, creator shortURLCreator) http.HandlerFunc {
@@ -31,7 +31,7 @@ func New(ctx context.Context, creator shortURLCreator) http.HandlerFunc {
 			return
 		}
 
-		if res, _ := creator.GetShortUrl(string(url)); res != "" {
+		if res, _ := creator.GetShortURL(string(url)); res != "" {
 			fmt.Println("err already exists")
 			w.WriteHeader(http.StatusBadRequest)
 			return
@@ -44,7 +44,7 @@ func New(ctx context.Context, creator shortURLCreator) http.HandlerFunc {
 			return
 		}
 
-		creator.CreateShortUrl(string(url), newCode)
+		creator.CreateShortURL(string(url), newCode)
 
 		fmt.Println("r,uri", r.URL.RequestURI())
 

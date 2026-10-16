@@ -9,7 +9,7 @@ type MemRepository struct {
 	storage map[string]string
 }
 
-func (r *MemRepository) GetShortUrl(url string) (string, error) {
+func (r *MemRepository) GetShortURL(url string) (string, error) {
 	for s, u := range r.storage {
 		if u == url {
 			return s, nil
@@ -19,12 +19,12 @@ func (r *MemRepository) GetShortUrl(url string) (string, error) {
 	return "", errors.New("shortUrl not found")
 }
 
-func (r *MemRepository) CreateShortUrl(url, shortURL string) error {
+func (r *MemRepository) CreateShortURL(url, shortURL string) error {
 	r.storage[shortURL] = url
 	return nil
 }
 
-func (r MemRepository) GetUrl(shortURL string) (string, error) {
+func (r MemRepository) GetURL(shortURL string) (string, error) {
 	fmt.Println("shortURL", shortURL)
 	fmt.Println(r.storage)
 	if url, ok := r.storage[shortURL]; ok {
