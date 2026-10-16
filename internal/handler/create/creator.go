@@ -10,7 +10,8 @@ import (
 )
 
 type shortURLCreator interface {
-	CreateShortUrl(ctx context.Context, url, shortURL string) error
+	CreateShortUrl(url, shortURL string) error
+	GetShortUrl(url string) (string, error)
 }
 
 func New(ctx context.Context, creator shortURLCreator) http.HandlerFunc {
@@ -30,6 +31,12 @@ func New(ctx context.Context, creator shortURLCreator) http.HandlerFunc {
 			return
 		}
 
+		if res, _ := creator.GetShortUrl(string(url)); res != "" {
+			fmt.Println("err already exists")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
 		newCode, err := NewCode(6)
 		if err != nil {
 			fmt.Println("err NewCode", err)
@@ -37,12 +44,8 @@ func New(ctx context.Context, creator shortURLCreator) http.HandlerFunc {
 			return
 		}
 
-		err = creator.CreateShortUrl(ctx, string(url), newCode)
-		if err != nil {
-			fmt.Println("err CreateShortUrl", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
+		creator.CreateShortUrl(string(url), newCode)
+
 		fmt.Println("r,uri", r.URL.RequestURI())
 
 		w.Write([]byte("http://localhost:8080/" + newCode))

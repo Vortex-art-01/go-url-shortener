@@ -9,7 +9,7 @@ import (
 )
 
 type shortURLGetter interface {
-	GetUrl(ctx context.Context, shortURL string) (string, error)
+	GetUrl(shortURL string) (string, error)
 }
 
 func New(ctx context.Context, getter shortURLGetter) http.HandlerFunc {
@@ -20,10 +20,12 @@ func New(ctx context.Context, getter shortURLGetter) http.HandlerFunc {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		url, err := getter.GetUrl(ctx, id)
+		fmt.Println("id:", id)
+
+		url, err := getter.GetUrl(id)
 		if err != nil {
 			fmt.Println(err)
-			w.WriteHeader(http.StatusInternalServerError)
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
